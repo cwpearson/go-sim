@@ -1,33 +1,25 @@
 package sim
 
-type LessThanComparable interface {
-	Less(other LessThanComparable) bool
-}
+import "container/heap"
 
 type Event interface {
-	LessThanComparable
 	Run()
-}
-
-type anEvent struct {
-	time float64
-}
-
-func (e *anEvent) Run() {
-	return
-}
-
-func (e *anEvent) Less(other *anEvent) bool {
-	return e.time < other.time
+	Priority() float64
 }
 
 // EventQueue implements heap.Interface and holds Items.
 type EventQueue []Event
 
+func NewEventQueue() *EventQueue {
+	q := &EventQueue{}
+	heap.Init(q)
+	return q
+}
+
 func (eq *EventQueue) Len() int { return len(*eq) }
 
 func (pq EventQueue) Less(i, j int) bool {
-	return pq[i].Less(pq[j])
+	return pq[i].Priority() < pq[j].Priority()
 }
 
 func (eq EventQueue) Size() int {
@@ -35,9 +27,11 @@ func (eq EventQueue) Size() int {
 }
 
 func (eq *EventQueue) Push(x interface{}) {
+	heap.Push(eq, x)
 	// n := eq.Len()
-	e := x.(Event)
-	*eq = append(*eq, e)
+	// e := x.(Event)
+	// *eq = append(*eq, e)
+	// heap.Fix(eq, n)
 }
 
 func (eq *EventQueue) Pop() interface{} {
@@ -54,13 +48,6 @@ func (pq EventQueue) Swap(i, j int) {
 	// 	pq[i].index = i
 	// 	pq[j].index = j
 }
-
-// // update modifies the priority and value of an Item in the queue.
-// func (pq *EventQueue) update(item *Item, value string, priority int) {
-// 	item.value = value
-// 	item.priority = priority
-// 	heap.Fix(pq, item.index)
-// }
 
 // // This example creates a EventQueue with some items, adds and manipulates an item,
 // // and then removes the items in priority order.
