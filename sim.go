@@ -3,24 +3,25 @@ package sim
 import "fmt"
 
 type Simulator struct {
-	events *EventQueue
+	events *PriorityQueue
+	time   float64
 }
 
 func New() *Simulator {
 	s := &Simulator{}
-	s.events = NewEventQueue()
+	s.events = NewPriorityQueue()
 	return s
 }
 
 func (s *Simulator) Insert(e Event) {
-	s.events.Push(e)
+	s.events.Insert(e)
 }
 
 func (s *Simulator) Run() {
-	for s.events.Size() > 0 {
-		e := s.events.Pop().(Event)
-		priority := e.Priority()
-		fmt.Println(priority)
-		e.Run()
+	for s.events.Len() > 0 {
+		e := s.events.Pop()
+		s.time = e.Priority()
+		fmt.Println("Sim time:", s.time)
+		e.Run(s)
 	}
 }

@@ -6,7 +6,8 @@ type anEvent struct {
 	time float64
 }
 
-func (e *anEvent) Run() {
+func (e *anEvent) Run(s *sim.Simulator) {
+	s.Insert(&anEvent{time: e.time + 1})
 	return
 }
 
